@@ -9,7 +9,7 @@ const ASSETS = [
   '/berbagiCerita/icons/icon-512x512.png',
 ];
 
-// Install
+// Install: Caching App Shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
@@ -17,7 +17,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate
+// Activate: Clean Old Cache
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -27,7 +27,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch
+// Fetch: Serve from cache first
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) =>
@@ -36,8 +36,8 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification
-self.addEventListener('push', event => {
+// Push Notification
+self.addEventListener('push', (event) => {
   let data = {
     title: 'Notifikasi Baru',
     options: {

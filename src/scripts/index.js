@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function registerServiceWorkerAndPush() {
   if (!('serviceWorker' in navigator)) return;
 
-  const registration = await navigator.serviceWorker.register('/sw.js');
+  const registration = await navigator.serviceWorker.register('/berbagiCerita/sw.js');
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return;
@@ -107,8 +107,6 @@ async function registerServiceWorkerAndPush() {
     },
   };
 
-  console.log('Push subscription berhasil:', subscriptionPayload);
-
   await fetch('https://story-api.dicoding.dev/v1/notifications/subscribe', {
     method: 'POST',
     headers: {
@@ -122,10 +120,3 @@ async function registerServiceWorkerAndPush() {
 window.addEventListener('load', () => {
   registerServiceWorkerAndPush();
 });
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/berbagiCerita/sw.js');
-  });
-}
-
