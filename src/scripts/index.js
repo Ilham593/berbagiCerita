@@ -78,16 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await app.renderPage();
     window.updateNav();
   });
-
 });
 
-
-
-async function registerServiceWorkerAndPush() {
-  if (!('serviceWorker' in navigator)) return;
-
-  const registration = await navigator.serviceWorker.register('/berbagiCerita/sw.js');
-
+async function registerPush(registration) {
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return;
 
@@ -99,7 +92,7 @@ async function registerServiceWorkerAndPush() {
   const token = localStorage.getItem('authToken');
   if (!token) return;
 
-  const subscriptionPayload = {
+  const payload = {
     endpoint: subscription.endpoint,
     keys: {
       p256dh: subscription.toJSON().keys.p256dh,
@@ -113,10 +106,18 @@ async function registerServiceWorkerAndPush() {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(subscriptionPayload),
+    body: JSON.stringify(payload),
   });
 }
 
-window.addEventListener('load', () => {
-  registerServiceWorkerAndPush();
+window.addEventListener('load', async () => {
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register('/berbagiCerita/sw.js');
+
+      await registerPush(registration);
+    } catch (error) {
+      console.error(' Service Worker registration failed:', error);
+    }
+  }
 });
